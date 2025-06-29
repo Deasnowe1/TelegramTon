@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TON Rewards</title>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <style>
     body {
       background-color: #f4f9ff;
@@ -44,13 +45,9 @@
     <p id="status"></p>
   </div>
 
-  <!-- Сначала подключаем UI SDK -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" onload="initApp()"></script>
-
-  <!-- Когда он загрузится — запускаем логику -->
   <script>
-    function initApp() {
-      const tonConnectUI = new TonConnectUI({
+    document.addEventListener("DOMContentLoaded", () => {
+      const tonConnectUI = new window.TonConnectUI({
         manifestUrl: "https://deasnowe1.github.io/TelegramTon/tonconnect-manifest.json",
         buttonRootId: "connect-button"
       });
@@ -82,7 +79,7 @@
           console.error(e);
         }
       });
-    }
+    });
   </script>
 </body>
 </html>
