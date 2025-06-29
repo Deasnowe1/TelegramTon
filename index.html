@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TON Rewards for Activity</title>
+  <title>TON Rewards</title>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <style>
     body {
@@ -33,12 +33,8 @@
     .button:hover {
       background-color: #0077b3;
     }
-    h1 {
-      margin-bottom: 10px;
-    }
-    p {
-      color: #555;
-    }
+    h1 { margin-bottom: 10px; }
+    p { color: #555; }
   </style>
 </head>
 <body>
@@ -58,7 +54,6 @@
     document.getElementById("connect-button").addEventListener("click", async () => {
       try {
         const connected = await tonConnectUI.connectWallet();
-
         if (connected && tonConnectUI.wallet) {
           document.getElementById("status").innerText = "Wallet connected. Sending transaction...";
 
